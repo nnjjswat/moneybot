@@ -17,6 +17,7 @@ var numgreenslost = 0;
 var maxlosers = 13; 
 var numredslost = 0; 
 var lastcurbal = 0; 
+var lastmedian = 0; 
 var numredsskipped = 0; 
 var numconsecreds = 0; 
 var totalmoneylost = 0; 
@@ -25,20 +26,19 @@ var lastcashoutmultiplier = 0;
 var cumcrash = 1; 
 var numgreensskipped = 0; 
 var avgbustscore = 0; 
-var sitoutthree = false
-var gamesundersevenconsecutively = 0; 
+var sitoutthree = true; 
 var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 1777; 
+var modifiedorigbetamount = 1785; 
 var maxmoneythatcanbelost = 15000; 
 var lastcrash = 0; 
 var ignore_randomized_bullshit = false; 
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 2222;
+var initialbetamount = 2000;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -76,14 +76,13 @@ function process_player_cashout(data) {
 	// console.log(data) 
 	// console.log('PLAYER CASHOUT'); 
 	cur_random = Math.floor((Math.random() * 100) + 2);
-	var curpayout = engine.getCurrentPayout(); 
 	sleep(3);
 
 	var initialbet = initialbetamount; 
 	if (cashed_out == true ) { 
 
-	} else if (ignore_randomized_bullshit == false && curpayout < 1.2) { 
-		curpayout = engine.getCurrentPayout(); 
+	} else if (ignore_randomized_bullshit == false) { 
+		var curpayout = engine.getCurrentPayout(); 
 		var dblpayout = curpayout * 2; 
 		if (numconseclosses > 2 && dblpayout > lastcashoutmultiplier && lastcrash < 155) { 
 			engine.cashOut(cocallback); 
@@ -309,15 +308,11 @@ function get_game_data(data) {
 	var returndata = {}; 
 	var table_total = 0; 
 	var arr = [];
-	var highestbet = 0; 
 	console.log('in game data'); 
 	var count = 0; 
 	console.log(data); 
 	for (var user in data) {
 		table_total += data[user].bet;
-		if (data[user].bet > highestbet) { 
-			highestbet = data[user].bet; 
-		} 
 		var the_user = engine.getUsername(user); 
 		gamedata[user] = data[user]
 		arr.push(data[user].bet); 
@@ -325,6 +320,7 @@ function get_game_data(data) {
 	}
 	var avgbet = table_total/count;
 	var medianbet = median(arr);
+	lastmedian = medianbet; 
 	returndata.medianbet = medianbet; 
 	returndata.avgbet=avgbet; 
 	returndata.table_total = table_total; 
@@ -416,7 +412,7 @@ function play_game(info) {
 				}
 			} else if (last_state == 'LOST') { 
 				if (lastcrash < 110) { 
-					initialbetamount = 3500; 
+					initialbetamount = 1500; 
 				} else { 
 					if (randomized % 5 == 0) { 
 						initialbetamount = modifiedorigbetamount * 1.022;  
@@ -435,16 +431,16 @@ function play_game(info) {
 
 		lastcurbal = tehbal; 
 
-		if (tehbal < 4939177) { 
+		if (tehbal < 4339177) { 
 			engine.stop() 
 			console.log('Stopping - we need to keep profit'); 
 		}
 
 		if (initialbetamount > 2800 && tehbal < 4039177) { 
-			initialbetamount = 2222; 
+			initialbetamount = 1500; 
 		}
 		if (initialbetamount > 2800 && tehbal >= 4039177 && cur_random % 2 ==0) { 
-			initialbetamount = initialbetamount * 1.2; 
+			initialbetamount = 3500; 
 		}
 
 		if (numconsecreds > 3 && last_state == 'WON') { 
@@ -460,7 +456,7 @@ function play_game(info) {
 		} 
 
 		if (numconsecwins > 9) { 
-			initialbetamount = initialbetamount * 1.575; 
+			initialbetamount = initialbetamount * 0.975; 
 		}
 
 		// } else { 
@@ -493,39 +489,36 @@ function play_game(info) {
 			initialbetamount = initialbetamount * 1.5; 
 			modifiedorigbetamount = initialbetamount; 
 		}
-		playing = true; 
 		if (cur_random % 6 == 0) { 
 			console.log('skippy mc dippy'); 
 			playing = false; 
 		} else if (cur_random % 6 == 0) { 
+			playing = true; 
+			initialbetamount = initialbetamount * 1.33;
 			console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 176)'); 
-			initialbetamount = initialbetamount * 1.2; 
 			engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 176, false); 
 		} else if (cur_random % 8 == 0) { 
 			console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 614)'); 
+			playing = true; 
 
 			var thebet = initialbetamount * 1.2; 
 			if (thebet > 7000) { 
-				thebet = 1700; 
+				thebet = 70000; 
 			} 
 
-			engine.placeBet(Math.round(thebet).toFixed(0)*100, 614, false); 
+			engine.placeBet(Math.round().toFixed(0)*100, 614, false); 
 
 		} else { 
+			playing = true; 
+
 			if (numconsecreds > 7) { 
 
 				if (initialbet * 2.3 > 7000) { 
 					initialbetamount = originalbetamount; 
 				} 
-				if (numconsecreds > 4 && numredswon > numredslost) { 
-					engine.placeBet(Math.round(initialbetamount * 2).toFixed(0)*100, 200, false); 
-					console.log('PLACING BET FOR ' + initialbetamount * 2.3 + ' (TP: 314)'); 
-				} else { 
-					var bet = initialbetamount * 1.02; 
-					initialbetamount = bet; 
-					engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 200, false); 
-				}
-				
+
+				engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 200, false); 
+				console.log('PLACING BET FOR ' + initialbetamount * 2.3 + ' (TP: 314)'); 
 			} else { 
 				engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 314, false); 
 				console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 314)'); 
@@ -551,6 +544,11 @@ function play_game(info) {
 
 function process_crash(data) { 
 	console.log(data); 
+
+	if (lastmedian < initialbetamount * 1.75) { 
+		initialbetamount = initialbetamount * 1.123; 
+	}
+
 	var bal = engine.getBalance(); 
 	console.log('BALANCE: ' + bal); 
 	console.log('ELAPSED: ' + data.elapsed); 
@@ -558,13 +556,6 @@ function process_crash(data) {
 	totalcashedout = 0; 
 	numplayerscurrentlyinthisgame = 0; 
 	lastcrash = data.game_crash; 
-
-	if (lastcrash < 777) { 
-		gamesundersevenconsecutively++; 
-	} else { 
-		gamesundersevenconsecutively = 0; 
-	}
-
 	console.log('CRASH AT ' + lastcrash); 
 	if (lastcrash < 197) { 
 		numconsecreds++; 
@@ -687,7 +678,7 @@ function process_crash(data) {
 	console.log('AVERAGE BUST SCORE: ' + avgbustscore); 
 	console.log('TOTAL MONEY WON: ' + totalmoneywon); 
 	console.log('TOTAL MONEY LOST: ' + totalmoneylost); 
-	console.log('GAMES PLAYED: ' + numredslost); 
+	console.log('GAMES PLAYED: ' + gamesplayed); 
 	console.log('---------------------------------'); 
 
 }; 
