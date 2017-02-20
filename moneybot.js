@@ -1,6 +1,6 @@
 
 console.log('Written by @currentsea'); 
-console.log('STARTING CURRENTSEA v0.1'); 
+console.log('STARTING CURRENTSEA v1.3'); 
 var numgameselapsed = 0;  
 var numgamesnotplayed = 0; 
 var numgamesplayed = 0; 
@@ -18,6 +18,7 @@ var maxlosers = 13;
 var numredslost = 0; 
 var lastcurbal = 0; 
 var numredsskipped = 0; 
+var highestbet = 0; 
 var numconsecreds = 0; 
 var totalmoneylost = 0; 
 var numredswon = 0; 
@@ -25,20 +26,21 @@ var lastcashoutmultiplier = 0;
 var cumcrash = 1; 
 var numgreensskipped = 0; 
 var avgbustscore = 0; 
-var sitoutthree = false
+var sitoutthree = false; 
 var gamesundersevenconsecutively = 0; 
 var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 1777; 
-var maxmoneythatcanbelost = 15000; 
+var modifiedorigbetamount = 2337; 
+var maxmoneythatcanbelost = 150000; 
+var gameselapsed = 0; 
 var lastcrash = 0; 
-var ignore_randomized_bullshit = false; 
+var ignore_randomized_bullshit = true; 
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 2222;
+var initialbetamount = 2337;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -185,6 +187,8 @@ function process_player_cashout(data) {
 			cashouttarget = cashouttarget * 3; 
 		} 
 
+		cashouttarget = cashouttarget * engine.getCurrentPayout() + (highestbet * 0.77); 
+
 		if (playing == true && cashed_out == false) { 
 			console.log('CASH OUT TARGET FOR THIS ITERATION: ' + cashouttarget); 
 			console.log('CASHED OUT FOR THIS ITERATION: ' + totalcashedout); 
@@ -243,7 +247,7 @@ function process_player_cashout(data) {
 
 		cur_random = Math.floor((Math.random() * 100) + 2);
 		var temp_random =  Math.floor((Math.random() * 100) + 2);
-		if (cur_random % 13 == 0 && temp_random > 77) { 
+		if (cur_random % 13 == 0 && temp_random > 77 && numconsecreds < 4) { 
 			console.log  ('Cashing out anyway'); 
 			if (playing == true) { 
 				actualprofit = actualprofit + (curpayout * initialbet); 
@@ -309,7 +313,6 @@ function get_game_data(data) {
 	var returndata = {}; 
 	var table_total = 0; 
 	var arr = [];
-	var highestbet = 0; 
 	console.log('in game data'); 
 	var count = 0; 
 	console.log(data); 
@@ -435,15 +438,15 @@ function play_game(info) {
 
 		lastcurbal = tehbal; 
 
-		if (tehbal < 4939177) { 
+		if (tehbal < 5) { 
 			engine.stop() 
 			console.log('Stopping - we need to keep profit'); 
 		}
 
-		if (initialbetamount > 2800 && tehbal < 4039177) { 
+		if (initialbetamount > 2800 && tehbal < 5) { 
 			initialbetamount = 2222; 
 		}
-		if (initialbetamount > 2800 && tehbal >= 4039177 && cur_random % 2 ==0) { 
+		if (initialbetamount > 2800 && tehbal >= 5 && cur_random % 2 ==0) { 
 			initialbetamount = initialbetamount * 1.2; 
 		}
 
@@ -489,6 +492,14 @@ function play_game(info) {
 			sitoutcount = 0; 
 		} 
 
+
+		if (gameselapsed > 20 && numconseclosses > 1 && numconsecreds > 1 && avgbuster  < 150) { 
+			var curbal = engine.getBalance() * 2; 
+			curbal = curbal * 0.2; 
+			engine.placeBet(Math.round(curbal).toFixed(0)*100, 215, false); 
+
+		}
+
 		if (initialbetamount == undefined) { 
 			initialbetamount = initialbetamount * 1.5; 
 			modifiedorigbetamount = initialbetamount; 
@@ -502,14 +513,14 @@ function play_game(info) {
 			initialbetamount = initialbetamount * 1.2; 
 			engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 176, false); 
 		} else if (cur_random % 8 == 0) { 
-			console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 614)'); 
+			console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 414)'); 
 
 			var thebet = initialbetamount * 1.2; 
 			if (thebet > 7000) { 
 				thebet = 1700; 
 			} 
 
-			engine.placeBet(Math.round(thebet).toFixed(0)*100, 614, false); 
+			engine.placeBet(Math.round(thebet).toFixed(0)*100, 214, false); 
 
 		} else { 
 			if (numconsecreds > 7) { 
@@ -527,7 +538,7 @@ function play_game(info) {
 				}
 				
 			} else { 
-				engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 314, false); 
+				engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 214, false); 
 				console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 314)'); 
 			}
 			
@@ -665,8 +676,10 @@ function process_crash(data) {
 
 	if (crash_state == 'NOT_PLAYED') { 
 		numskipped++; 
-		if (lastcrash < 197) { 
-			initialbetamount = 2121; 
+		if (lastcrash < 197) {
+			if(numconsecreds > 3) { 
+				initialbetamount = 4444; 
+			}
 			numredsskipped++; 
 		} else { 
 			numgreensskipped++; 
@@ -687,7 +700,9 @@ function process_crash(data) {
 	console.log('AVERAGE BUST SCORE: ' + avgbustscore); 
 	console.log('TOTAL MONEY WON: ' + totalmoneywon); 
 	console.log('TOTAL MONEY LOST: ' + totalmoneylost); 
-	console.log('GAMES PLAYED: ' + numredslost); 
+	gameselapsed = gamesplayed + numredsskipped + numgreensskipped; 
+	console.log('GAMES ELAPSED: ' + gameselapsed); 
+	console.log('GAMES PLAYED: ' + gamesplayed); 
 	console.log('---------------------------------'); 
 
 }; 
