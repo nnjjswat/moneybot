@@ -32,7 +32,7 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 1555; 
+var modifiedorigbetamount = 1111; 
 var maxmoneythatcanbelost = 150000; 
 var gameselapsed = 0; 
 var lastcrash = 0; 
@@ -40,7 +40,7 @@ var ignore_randomized_bullshit = true;
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 1555;
+var initialbetamount = 1111;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -360,10 +360,10 @@ function play_game(info) {
 
 		lastcurbal = tehbal; 
 
-		if (tehbal < 3284297) { 
-			engine.stop() 
-			console.log('Stopping - we need to keep profit'); 
-		}
+		// if (tehbal < 3284297) { 
+		// 	engine.stop() 
+		// 	console.log('Stopping - we need to keep profit'); 
+		// }
 
 		if ((initialbetamount > originalbetamount * 2.7) && tehbal < 5) { 
 			initialbetamount = originalbetamount * 1.7; 
