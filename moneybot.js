@@ -20,9 +20,10 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = originalbetamount; 
+var modifiedorigbetamount = 1033; 
 var maxmoneythatcanbelost = 15000; 
 var lastcrash = 0; 
+var ignore_randomized_bullshit = false; 
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
@@ -64,35 +65,42 @@ function process_player_cashout(data) {
 	// console.log(data) 
 	// console.log('PLAYER CASHOUT'); 
 	cur_random = Math.floor((Math.random() * 100) + 2);
-
+	var initialbet = initialbetamount; 
 	if (cashed_out == true ) { 
 
-	} else { 
+	} else if (ignore_randomized_bullshit == false) { 
 		var curpayout = engine.getCurrentPayout(); 
+		var dblpayout = curpayout * 2; 
+		if (numconseclosses > 2 && dblpayout > lastcashoutmultiplier && lastcrash < 155) { 
+			engine.cashOut(cocallback); 
+			cashed_out=true; 
+			console.log('consecutive losses save your ass cashout'); 
+		}
+
 		curpayout = engine.getCurrentPayout(); 
 		if (data.username == 'beebo' && gamedata.game_data[data.username].stopped_at != undefined) { 
 			lastcashoutmultiplier = gamedata.game_data['beebo'].stopped_at; 
 			console.log('SET LAST CASHOUT MULTIPLIER -- ' + lastcashoutmultiplier); 
 		}
-		if (cur_random < 3 && numplayerscurrentlyinthisgame <= targetgetout * 3.14 && cashed_out == false) { 
-			if (randomized < 20) { 
-				targetgetout = numplayerscurrentlyinthisgame
-			}
+		// if (cur_random < 3 && numplayerscurrentlyinthisgame <= targetgetout * 3.14 && cashed_out == false) { 
+		// 	if (randomized < 20) { 
+		// 		targetgetout = numplayerscurrentlyinthisgame
+		// 	}
 
-			if (playing == true) { 
-				actualprofit = actualprofit + (curpayout * initialbet); 
-				lastcashoutmultiplier = curpayout * initialbet; 
-			}
+		// 	if (playing == true) { 
+		// 		actualprofit = actualprofit + (curpayout * initialbet); 
+		// 		lastcashoutmultiplier = curpayout; 
+		// 	}
 
-			engine.cashOut(cocallback); 
-			console.log('GTFO! ' + numplayerscurrentlyinthisgame  + ' <= ' + targetgetout); 
-			cashed_out=true; 
-		}
-		if (curpayout > gamedata.medianbet * 3.14) { 
+		// 	engine.cashOut(cocallback); 
+		// 	console.log('GTFO! ' + numplayerscurrentlyinthisgame  + ' <= ' + targetgetout); 
+		// 	cashed_out=true; 
+		// }
+		if (curpayout * initialbet > gamedata.medianbet * 3.14) { 
 			cashed_out=true; 
 			if (playing == true) { 
 					actualprofit = actualprofit + (curpayout * initialbet); 
-					lastcashoutmultiplier = curpayout * initialbet; 
+					lastcashoutmultiplier = curpayout; 
 
 			}
 
@@ -102,7 +110,7 @@ function process_player_cashout(data) {
 		if (cur_random == 13 && gamedata.medianbet % 17 == 0) { 
 			if (playing == true) { 
 				actualprofit = actualprofit + (curpayout * initialbet); 
-				lastcashoutmultiplier = curpayout * initialbet; 
+				lastcashoutmultiplier = curpayout; 
 
 			}
 			engine.cashOut(cocallback); 
@@ -122,7 +130,7 @@ function process_player_cashout(data) {
 		if (curpayout > (initialbetamount * 6)) { 
 			if (playing == true) { 
 				actualprofit = actualprofit + (curpayout * initialbet); 
-				lastcashoutmultiplier = curpayout * initialbet; 
+				lastcashoutmultiplier = curpayout; 
 			}
 			engine.cashOut(cocallback); 
 			cashed_out = true; 
@@ -132,7 +140,7 @@ function process_player_cashout(data) {
 		if (numplayerscurrentlyinthisgame < 3) { 
 			if (playing == true) { 
 				actualprofit = actualprofit + (curpayout * initialbet); 
-				lastcashoutmultiplier = curpayout * initialbet; 
+				lastcashoutmultiplier = curpayout; 
 			}
 			engine.cashOut(cocallback); 
 			cashed_out = true; 
@@ -158,6 +166,11 @@ function process_player_cashout(data) {
 			cashouttarget = cashouttarget * 0.28; 
 		} 
 
+
+		if (numconsecreds > 6) { 
+			cashouttarget = cashouttarget * 3; 
+		} 
+
 		if (playing == true && cashed_out == false) { 
 			console.log('CASH OUT TARGET FOR THIS ITERATION: ' + cashouttarget); 
 			console.log('CASHED OUT FOR THIS ITERATION: ' + totalcashedout); 
@@ -170,7 +183,7 @@ function process_player_cashout(data) {
 			if (playing == true) { 
 				console.log('Cashing out because totalcashedout >  cashouttarget for this iteration: PAYOUT: ' + curpayout); 
 				actualprofit = actualprofit + (curpayout * initialbet);  
-				lastcashoutmultiplier = curpayout * initialbet; 
+				lastcashoutmultiplier = curpayout; 
 			} else { 
 				paperprofit = paperprofit + curpayout; 
 			}
@@ -198,16 +211,15 @@ function process_player_cashout(data) {
 		if (other_random+1 - cur_random + 1 == 7 && randomized_random == cur_random) { 
 			if (playing == true) { 
 				actualprofit = actualprofit + (curpayout * initialbet); 
-				lastcashoutmultiplier = curpayout * initialbet; 
+				lastcashoutmultiplier = curpayout; 
 			}
 			engine.cashOut(cocallback); 
 			console.log('Cashed out from random number ' + cur_random)
 			cashed_out=true; 
 		}
+	} else { 
+		console.log  ('Ignoring randoized bullshit... '); 
 	}
-
-
-	// console.log  ('TOTAL CASHED OUT: ' + tablecurrentwager); 
 }
 
 function cocallback(data) { 
@@ -373,11 +385,20 @@ function play_game(info) {
 	 	
 	} 
 
+	var tehbal = engine.getBalance()
 
-	if (initialbetamount > 2800) { 
-		initialbetamount = 1500; 
+
+	if (tehbal < 4039177) { 
+		engine.stop() 
+		console.log('Stopping - we need to keep profit'); 
 	}
 
+	if (initialbetamount > 2800 && tehbal < 4039177) { 
+		initialbetamount = 1500; 
+	}
+	if (initialbetamount > 2800 && tehbal >= 4039177 && cur_random % 2 ==0) { 
+		initialbetamount = 3500; 
+	}
 
 	if (numconsecreds > 3 && last_state == 'WON') { 
 		initialbetamount = initialbetamount * 1.7; 
@@ -418,26 +439,37 @@ function play_game(info) {
 
 
 	if (initialbetamount == undefined) { 
-		initialbetamount = modifiedorigbetamount * 1.062; 
+		initialbetamount = initialbetamount * 1.062; 
+		modifiedorigbetamount = initialbetamount; 
 	}
 	playing = true; 
-	if (cur_random % 3 == 0) { 
+	if (cur_random % 6 == 0) { 
 		console.log('skippy mc dippy'); 
 		playing = false; 
 	} else if (cur_random % 6 == 0) { 
 		console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 176)'); 
-		engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 176, false); 
+		engine.placeBet(Math.round(initialbetamount * 1.9).toFixed(0)*100, 176, false); 
 	} else if (cur_random % 8 == 0) { 
-		console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 3314)'); 
-		engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 3314, false); 
+		console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 614)'); 
+		engine.placeBet(Math.round(initialbetamount * 1.2).toFixed(0)*100, 614, false); 
 
 	} else { 
-		console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 314)'); 
-		engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 314, false); 
+		if (numconsecreds > 3) { 
+			engine.placeBet(Math.round(initialbetamount * 2.3).toFixed(0)*100, 200, false); 
+			console.log('PLACING BET FOR ' + initialbetamount * 2.3 + ' (TP: 314)'); 
+		} else { 
+			engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, 314, false); 
+			console.log('PLACING BET FOR ' + initialbetamount + ' (TP: 314)'); 
+		}
+		
 	}
  
 
-	
+	if (cur_random % 3 ==0) { 
+		ignore_randomized_bullshit = true; 
+	} else  {
+		ignore_randomized_bullshit = false; 
+	}
 
 
 	if (gamesplayed == 0) { 
@@ -521,7 +553,7 @@ function process_crash(data) {
 			if (randomized % 3 == 0)  { 
 				initialbetamount = initialbetamount * 1.11; 
 			} else { 
-				initialbetamount = originalbetamount; 
+				initialbetamount = modifiedorigbetamount * 1.023; 
 			}
 
 		} else { 
@@ -532,16 +564,21 @@ function process_crash(data) {
 					console.log('reduced bet amount to 25 percent of account amount'); 
 				} 
 			} else { 
-				initialbetamount = initialbetamount * 0.975; 
+				initialbetamount = modifiedorigbetamount * 0.99965; 
 			}			
 			if (initialbetamount <= 0) { 
-				initialbetamount = 1432; 
+				initialbetamount = 1337; 
 			}
 		}
 	}
 
 	if (crash_state == 'NOT_PLAYED') { 
 		numskipped++; 
+		if (lastcrash < 121) { 
+			initialbetamount = 2121; 
+		}
+		
+
 	}
 }; 
 
