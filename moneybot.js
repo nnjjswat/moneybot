@@ -364,7 +364,7 @@ function play_game(info) {
 		var tehbal = engine.getBalance()
 
 		lastcurbal = tehbal;
-		if (tehbal < 2013420) { 
+		if (tehbal < 813420) { 
 			console.log('failsafe'); 
 			engine.stop(); 
 		}
@@ -610,7 +610,7 @@ function process_crash(data) {
 
 		} else { 
 			if (randomized > 50) { 
-				initialbetamount = initialbetamount * 1.975; 
+				initialbetamount = initialbetamount * 1.2; 
 				if (initialbetamount > engine.getBalance()) { 
 					initialbetamount = engine.getBalance() * 0.25; 
 					console.log('reduced bet amount to 25 percent of account amount'); 
