@@ -19,7 +19,7 @@ var totalwagered = 0; // do not touch
 var moneywon = 0; // do not touch
 var moneylost = 0; // do not touch
 var highestbet = 0; // do not touch
-var userlist = []; // do not touch
+var userlist = {};  // do not touch
 var gamedata = {}; // do not touch
 var numconsecwins = 0; // do not touch
 var numconsecskipped = 0; // do not touch
@@ -72,7 +72,8 @@ function play_game_now(data) {
 } 
 
 function process_player_cashout(data) { 
-	tablecashedout = tablecashedout + ((data.stopped_at / 100) * curgamedata[data.username].bet)
+	console.log(userlist[data.username].bet); 
+	tablecashedout = tablecashedout + ((data.stopped_at / 100) * data.bet)
 	if (data.username == myusername) { 
 		console.log('cash out detected: ' + data.username); 
 		mylastcrash = data.stopped_at; 
@@ -155,6 +156,7 @@ function process_game_crash(data) {
 		engine.stop(); 
 	} 
 	tablecashedout = 0; 
+	userlist = []; 
 
 } 
 /* END GAME FUNCTIONS */ 
@@ -177,8 +179,8 @@ function get_game_data(data)  {
 			highestbet = data[user].bet; 
 		} 
 		var the_user = engine.getUsername(user); 
-		gamedata[user] = data[user]
-		userlist.push(user); 
+		gamedata[user] = data[user]; 
+		userlist[user] = data[user]; 
 		if (user == 'beebo' && data[user].bonus > 0) { 
 			lastbonus = data[user].bonus; 
 		}
