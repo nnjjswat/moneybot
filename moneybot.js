@@ -14,7 +14,7 @@ var numgameslost = 0;
 var gamesplayed = 0; 
 var numgreenswon = 0; 
 var numgreenslost = 0; 
-var maxlosers = 7; 
+var maxlosers = 22; 
 var numredslost = 0; 
 var lastcurbal = 0; 
 var numredsskipped = 0; 
@@ -34,7 +34,7 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 1000; 
+var modifiedorigbetamount = 666; 
 var maxmoneythatcanbelost = 150000; 
 var gameselapsed = 0; 
 var lastcrash = 0; 
@@ -42,7 +42,7 @@ var ignore_randomized_bullshit = true;
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 1000;
+var initialbetamount = 666;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -151,19 +151,19 @@ function process_player_cashout(data) {
 		if (cur_random >= 94) { 
 			cashouttarget = gamedata.table_total; 
 		} else if (cur_random > 77 && cur_random < 94) { 
-			cashouttarget = gamedata.table_total * 1.62
+			cashouttarget = gamedata.table_total * 1.12
 		} else if (cur_random >= 60 && cur_random <= 77) { 
 			cashouttarget = gamedata.table_total * 0.6723; 
 		} else if (cur_random > 50 && cur_random < 60) { 
-			cashouttarget = gamedata.table_total * 1.2; 
+			cashouttarget = gamedata.table_total * 0.7; 
 		} else if (cur_random >=35 && cur_random <= 50) { 
-			cashouttarget = gamedata.table_total * 1.33; 
+			cashouttarget = gamedata.table_total * 1.2; 
 		} else { 
-			cashouttarget = gamedata.table_total * 1.5; 
+			cashouttarget = gamedata.table_total * 1.1; 
 		}
 
 		if (last_state == 'LOST' && cur_random % 3 == 0) { 
-			cashouttarget = cashouttarget * 0.28; 
+			cashouttarget = cashouttarget * 0.8; 
 		} 
 
 
