@@ -1,5 +1,5 @@
 // bustabitbot.js - Written by @currentsea
-// version 2.2-beta */
+// version 1.0-beta */
 // MIT License
 
 // Copyright (c) 2017 Joe Bull
@@ -25,15 +25,14 @@
 
 /** BEGIN USER CONFIG **/ 
 var maxpercentloss = 0.8; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
-var betpercentage = 0.03; // will use 2% of bankroll minimum for each game 
+var betpercentage = 0.025; // will use 2% of bankroll minimum for each game 
 var myusername = 'beebo' // put your username here 
-var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 111, 141, 161, 123, 171, 133, 177, 182, 222, 2233, 222, 171, 1011, 105, 106, 106, 188, 172, 101, 102, 103, 104, 107, 108, 109, 110, 116, 118, 119, 131, 111, 118, 148, 111, 131, 161, 171, 181, 191, 123, 161, 181, 183, 183, 196, 186, 173, 176, 1762, 172, 171, 183, 166, 186, 183, 121, 161, 106, 107, 103, 106, 107, 168, 179, 321, 141, 163, 1666, 1777, 1888, 121, 121, 163, 163, 166, 177, 182, 132, 165, 203, 103, 123, 123, 112, 111, 105, 106, 107, 1111, 111111, 106, 108, 105, 662, 1234, 234, 622, 234, 106, 106, 283, 223, 116, 116, 776, 223, 116, 117, 118, 181, 191, 175, 171, 161, 166, 171, 181, 121, 111, 111, 111, 111, 166, 161, 171, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 872, 323, 178, 166, 161, 171, 832, 823, 171, 283, 182, 171, 100062, 106, 685, 283, 128, 183, 186, 181, 133, 161, 183, 232, 161, 173, 333, 161, 443, 485, 133, 194, 196, 186, 102, 303, 106, 107, 116, 118, 166, 199, 165, 115, 105]
+var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 111, 101, 102, 103, 104, 107, 108, 109, 110, 116, 118, 119, 131, 111, 118, 148, 168, 179, 321, 141, 163, 1666, 1777, 1888, 121, 121, 163, 163, 166, 177, 182, 132, 165, 203, 103, 123, 123, 112, 111, 105, 106, 107, 1111, 111111, 106, 108, 105, 662, 1234, 234, 622, 234, 106, 106, 283, 223, 116, 116, 776, 223, 116, 117, 118, 181, 191, 175, 171, 161, 166, 171, 181, 121, 111, 111, 111, 111, 166, 161, 171, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 872, 323, 178, 166, 165, 115, 105]
 /** END USER CONFIG **/ 
 
 /** BEGIN VARIABLES **/ 
 var startingbalance = engine.getBalance() / 100; // do not touch 
 var exitpoint = startingbalance - (startingbalance * maxpercentloss);  // do not touch 
-var currentlyplaying = false; 
 var gameselapsed = 0; //do not touch
 var gamesplayed = 0; // do not touch 
 var gameswon = 0; // do not touch 
@@ -72,15 +71,10 @@ var multipliersbelow120 = []; // do not touch
 var medianbelow120 = 0; // do not touch 
 var onefifthwagerratio = 0; // do not touch 
 var table_total = 0; // do not touch 
-var cur_random = Math.floor((Math.random() * 100) + 1); // do not touch
-var sitoutcount = 0; 
-var emergencycashouts = 0; 
-var sitoutthree = false; 
-
 /** END VARIABLES VARIABLES **/ 
 
 console.log('bustabitbot.js - written by @currentsea - https://keybase.io/currentsea'); 
-console.log('version 2.1 - beta testing'); 
+console.log('version 0.1 - alpha testing'); 
 console.log('starting balance: ' + startingbalance); 
 console.log('setting exit point to a balance less than or equal to ' + exitpoint);
 console.log('beginning bet: ' + beginningbet); 
@@ -97,56 +91,27 @@ engine.on('cashed_out', process_player_cashout)
 
 /* GAME FUNCTIONS */ 
 function prepare_game(data) { 
+	console.log('Preparing game'); 
+	console.log(data); 
+	console.log('current bet: ' + curbet); 
 
-	if (sitoutthree == false) { 
-
-		cur_random = Math.floor((Math.random() * 100) + 1);
-		if (cur_random % 13 == 0) { 
-			console.log('Sitting out 3 games in a row starting the game after this one'); 
-			sitoutthree = true; 
-			sitoutcount = 0; 
+	randomten = Math.floor((Math.random() * breakpoints.length) + 1);
+	var targetmultiplier = breakpoints[randomten]; 
+	console.log(targetmultiplier + ' is target multipiler'); 
+	if(numconseclosses > 3 && targetmultiplier < 200) { 
+		curbet = curbet * 3; 
+	} else if (numconsecreds > 8) { 
+		curbet = curbet * 3
+		targetmultiplier = targetmultiplier * 1.3
+		if (targetmultiplier > 400) { 
+			targetmultiplier = 400; 
 		} 
-
-		console.log('Preparing game'); 
-		console.log(data); 
-		console.log('current bet: ' + curbet); 
-
-		randomten = Math.floor((Math.random() * breakpoints.length) + 1);
-		var targetmultiplier = breakpoints[randomten]; 
-		if(numconseclosses > 3 && targetmultiplier < 200) { 
-			curbet = curbet * 3; 
-		} else if (numconsecreds > 8) { 
-			curbet = curbet * 3
-			targetmultiplier = targetmultiplier * 1.3
-			if (targetmultiplier > 400) { 
-				targetmultiplier = 400; 
-			} 
-		} 
-		console.log('RANDOM TEN: ' + randomten); 
-		var avghist = average(crashhistory); 
-		var avgmed = median(crashhistory); 
-
-		if (avgmed > targetmultiplier && gameselapsed > 10 && numconsecreds > 3) { 
-			targetmultiplier = targetmultiplier * 2; 
-		} 
-		if (targetmultiplier == undefined) { 
-			randomten = Math.floor((Math.random() * breakpoints.length) + 1);
-
-			targetmultiplier = breakpoints[randomten]; 
-		} 
-		console.log(targetmultiplier + ' is target multipiler'); 
-		engine.placeBet(Math.round(curbet).toFixed(0)*100, targetmultiplier, false); 
-	} else { 
-		console.log('sitting this one out (' + sitoutcount + ' out of 3)');
-		sitoutcount++;
-		if (sitoutcount >= 3) { 
-			sitoutthree = false; 
-			sitoutcount = 0; 
-			console.log('playing the next round after sitting out'); 
-		}
-
 	} 
-}
+	console.log('RANDOM TEN: ' + randomten); 
+	engine.placeBet(Math.round(curbet).toFixed(0)*100, targetmultiplier, false); 
+
+
+} 
 // 10018200 / 42805400
 function play_game_now(data) { 
 	console.log('playing game now'); 
@@ -155,64 +120,42 @@ function play_game_now(data) {
 } 
 
 function process_player_cashout(data) { 
-		// console.log(userlist[data.username].bet); 
-		tablecashedout = tablecashedout + ((data.stopped_at / 100) * userlist[data.username].bet); 
-		var cashoutanyway = Math.floor((Math.random() * 1000) + 1); 
+	console.log(userlist[data.username].bet); 
+	tablecashedout = tablecashedout + ((data.stopped_at / 100) * userlist[data.username].bet); 
 
 
-		if ((sumofcashedoutmultipliersbelow120 * 0.6) > curtabletotal && cashoutanyway > 900) { 	
-			engine.cashOut(cashout_cb); 
-			emergencycashouts++; 
-			console.log('another emergency cashout'); 
-		}
-
-		if (cashoutanyway % 23 == 0 && currentlyplaying == true) { 
-				engine.cashOut(cashout_cb); 
-				emergencycashouts++; 
-				console.log('emergency cashout');			
-		} 
-
-		var curpayout = engine.getCurrentPayout(); 
+	var curpayout = engine.getCurrentPayout(); 
 
 
-		if (randomten == 7 && curpayout > 120 && tablecashedout < table_total) { 
-			console.log('cashing out!'); 
-			engine.cashOut(cashout_cb); 
-			if (currentlyplaying == true) { 
-				emergencycashouts++; 
-			}
+	if (randomten == 7 && curpayout > 120 && tablecashedout < table_total) { 
+		console.log('cashing out!'); 
+		engine.cashOut(cashout_cb); 
+	} 
 
-		} 
+	if (curpayout < 120 && data.stopped_at > 100) { 
+		wageredbelow120 = wageredbelow120 +  userlist[data.username].bet; 
+		cashedoutbelow120 = cashedoutbelow120 + (userlist[data.username].bet * (data.stopped_at / 100)); 
+		numplayerscashedoutbelow120 = numplayerscashedoutbelow120 + 1; 
+		sumofcashedoutmultipliersbelow120 += data.stopped_at; 
+		multipliersbelow120.push(data.stopped_at); 
+	}
+	if (data.username == myusername) { 
+		console.log('cash out detected: ' + data.username); 
+		mylastcrash = data.stopped_at; 
+		var crashdecimal = mylastcrash / 100; 
+		console.log(data); 
+		console.log(myusername + ' cash out'); 
+		console.log(myusername + ' bet: ' + curbet); 
+		var winningpayout = curbet * crashdecimal; 
+		var profitmade = winningpayout - curbet; 
+		moneywon = moneywon + profitmade; 
+		console.log('winningpayout: ' + winningpayout); 
+		console.log('total payout: ' + profitmade); 
+		console.log(myusername + ' stopped at: ' + mylastcrash); 
+	} 
 
-		if (curpayout < 120 && data.stopped_at > 100) { 
-			wageredbelow120 = wageredbelow120 +  userlist[data.username].bet; 
-			cashedoutbelow120 = cashedoutbelow120 + (userlist[data.username].bet * (data.stopped_at / 100)); 
-			numplayerscashedoutbelow120 = numplayerscashedoutbelow120 + 1; 
-			sumofcashedoutmultipliersbelow120 += data.stopped_at; 
-			multipliersbelow120.push(data.stopped_at); 
-		}
-		if (data.username == myusername) { 
-			console.log('cash out detected: ' + data.username); 
-			mylastcrash = data.stopped_at; 
-			var crashdecimal = mylastcrash / 100; 
-			console.log(data); 
-			console.log(myusername + ' cash out'); 
-			console.log(myusername + ' bet: ' + curbet); 
-			var winningpayout = curbet * crashdecimal; 
-			var profitmade = winningpayout - curbet; 
-			moneywon = moneywon + profitmade; 
-			console.log('winningpayout: ' + winningpayout); 
-			console.log('total payout: ' + profitmade); 
-			if (currentlyplaying == true) { 
-				emergencycashouts++; 
-			}
-			console.log(myusername + ' stopped at: ' + mylastcrash); 
-		} 
-
-} 
-	
 	// console.log(data); 
-
+} 
 
 function process_game_crash(data) { 
 	console.log('game over'); 
@@ -274,19 +217,18 @@ function process_game_crash(data) {
 	console.log('games elapsed: ' + gameselapsed); 
 	console.log('games played: ' + gamesplayed); 
 	console.log('games won: ' + gameswon); 
-	console.log('emergency cashouts: ' + emergencycashouts); 
 	console.log('games lost: ' + gameslost); 
-	console.log('money won: '  + moneywon); 
+	console.log('money won: ' + moneywon); 
 	console.log('money lost: ' + moneylost); 
 	console.log('total wagered: ' + totalwagered); 
 	console.log('--'); 
 	console.log('total table wager: ' + table_total); 
 	console.log('total table wager below 1.2: ' + wageredbelow120); 
-	// console.log('std dev of crash history: ' + stddev(crashhistory)); 
-	// console.log('std dev of multipliers cashed out below 120: ' + stddev(multipliersbelow120)); 
+	console.log('std dev of crash history: ' + stddev(crashhistory)); 
+	console.log('std dev of multipliers cashed out below 120: ' + stddev(multipliersbelow120)); 
 
 	onefifthwagerratio = cashedoutbelow120 / wageredbelow120; 
-	console.log(' ONE FIFTH WAGER RATIO from last game: ' + onefifthwagerratio + "%"); 
+	console.log(onefifthwagerratio + "%"); 
 	console.log('profit taken below 1.2: ' + cashedoutbelow120); 
 	medianbelow120 = median(multipliersbelow120); 
 	console.log('median multiplier below 120: ' + medianbelow120); 
