@@ -25,9 +25,9 @@
 
 /** BEGIN USER CONFIG **/ 
 var maxpercentloss = 0.5; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
-var betpercentage = 0.035; // will use 2% of bankroll minimum for each game 
+var betpercentage = 0.015; // will use 2% of bankroll minimum for each game 
 var myusername = 'beebo' // put your username here 
-var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 321, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 872, 323, 178, 166, 165, 115, 105]
+var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 111, 101, 102, 103, 104, 107, 108, 109, 110, 116, 118, 119, 131, 111, 118, 148, 168, 179, 321, 141, 163, 1666, 1777, 1888, 121, 121, 163, 163, 166, 177, 182, 132, 165, 203, 103, 123, 123, 112, 111, 105, 106, 107, 1111, 111111, 106, 108, 105, 662, 1234, 234, 622, 234, 106, 106, 283, 223, 116, 116, 776, 223, 116, 117, 118, 181, 191, 175, 171, 161, 166, 171, 181, 121, 111, 111, 111, 111, 166, 161, 171, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 872, 323, 178, 166, 165, 115, 105]
 /** END USER CONFIG **/ 
 
 /** BEGIN VARIABLES **/ 

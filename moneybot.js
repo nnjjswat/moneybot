@@ -34,7 +34,7 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 666; 
+var modifiedorigbetamount = 1077; 
 var maxmoneythatcanbelost = 150000; 
 var gameselapsed = 0; 
 var lastcrash = 0; 
@@ -42,7 +42,7 @@ var ignore_randomized_bullshit = true;
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 666;
+var initialbetamount = 1077;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -364,7 +364,7 @@ function play_game(info) {
 		var tehbal = engine.getBalance()
 
 		lastcurbal = tehbal;
-		if (tehbal < 813420) { 
+		if (tehbal < 2113420) { 
 			console.log('failsafe'); 
 			engine.stop(); 
 		}
@@ -455,7 +455,7 @@ function play_game(info) {
 				} 
 				if (numconsecreds > 4 && numredswon > numredslost) { 
 					// engine.placeBet(Math.round(initialbetamount * 2).toFixed(0)*100, 272, false); 
-					console.log('PLACING BET FOR ' + initialbetamount * 2.3 + ' (TP: 314)'); 
+					// console.log('PLACING BET FOR ' + initialbetamount * 1.23 + ' (TP: 314)'); 
 				} else { 
 					var bet = initialbetamount * 1.02; 
 					initialbetamount = bet; 
@@ -490,8 +490,14 @@ function play_game(info) {
 		} else { 
 			multiplier = 155; 
 		} 
-		
+		multiplier = Math.floor(Math.floor((Math.random() * 777) + 100) * 0.5);
+		if (multiplier < 100) { 
+			multiplier = multiplier + 100; 
+		} 
 		console.log('using multiplier ' + multiplier); 
+
+
+
 		engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, multiplier, false); 
 
 
