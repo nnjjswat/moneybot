@@ -1,5 +1,5 @@
 // bustabitbot.js - Written by @currentsea
-// version 1.0-beta */
+// version 2.1-beta */
 // MIT License
 
 // Copyright (c) 2017 Joe Bull
