@@ -24,10 +24,10 @@
 
 
 /** BEGIN USER CONFIG **/ 
-var maxpercentloss = 0.1; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
-var betpercentage = 0.01; // will use 2% of bankroll minimum for each game 
+var maxpercentloss = 0.5; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
+var betpercentage = 0.035; // will use 2% of bankroll minimum for each game 
 var myusername = 'beebo' // put your username here 
-var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 321, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 2272, 323, 178, 166, 165, 115, 105]
+var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 321, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 872, 323, 178, 166, 165, 115, 105]
 /** END USER CONFIG **/ 
 
 /** BEGIN VARIABLES **/ 
@@ -52,6 +52,8 @@ var gamedata = {}; // do not touch
 var numconsecwins = 0; // do not touch
 var numconsecskipped = 0; // do not touch
 var numconseclosses = 0; // do not touch
+var numconsecreds = 0; // do not touch
+var numconsecgreens = 0; // do not touch
 var greengames = []; // do not touch
 var redgames = []; // do not touch
 var crash_state = engine.lastGamePlay(); // do not touch 
@@ -94,10 +96,19 @@ function prepare_game(data) {
 	console.log('current bet: ' + curbet); 
 
 	randomten = Math.floor((Math.random() * breakpoints.length) + 1);
-	console.log(breakpoints[randomten] + ' is target multipiler'); 
-
+	var targetmultiplier = breakpoints[randomten]; 
+	console.log(targetmultiplier + ' is target multipiler'); 
+	if(numconseclosses > 3 && targetmultiplier < 200) { 
+		curbet = curbet * 3; 
+	} else if (numconsecreds > 8) { 
+		curbet = curbet * 3
+		targetmultiplier = targetmultiplier * 1.3
+		if (targetmultiplier > 400) { 
+			targetmultiplier = 400; 
+		} 
+	} 
 	console.log('RANDOM TEN: ' + randomten); 
-	engine.placeBet(Math.round(curbet).toFixed(0)*100, breakpoints[randomten], false); 
+	engine.placeBet(Math.round(curbet).toFixed(0)*100, targetmultiplier, false); 
 
 
 } 
@@ -167,8 +178,12 @@ function process_game_crash(data) {
 	} 
 	if (lastcrash <= 197) { 
 		redgames.push(gamesummary); 
+		numconsecreds++; 
+		numconsecgreens = 0; 
 	} else { 
 		greengames.push(gamesummary); 
+		numconsecgreens++; 
+		numconsecreds = 0; 
 	} 
 	console.log('game crash: ' + lastcrash); 
 	gameselapsed++; 
