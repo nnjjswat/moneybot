@@ -57,6 +57,7 @@ var numconseclosses = 0; // do not touch
 var numconsecreds = 0; // do not touch
 var numconsecgreens = 0; // do not touch
 var greengames = []; // do not touch
+var paddedprofit = 0; // do not touch
 var redgames = []; // do not touch
 var crash_state = engine.lastGamePlay(); // do not touch 
 var lastbonus = 0; // do not touch
@@ -77,7 +78,7 @@ var cur_random = Math.floor((Math.random() * 100) + 1); // do not touch
 var sitoutcount = 0; 
 var emergencycashouts = 0; 
 var sitoutthree = false; 
-
+var originalexitpoint = exitpoint; 
 /** END VARIABLES VARIABLES **/ 
 
 console.log('bustabitbot.js - written by @currentsea - https://keybase.io/currentsea'); 
@@ -148,10 +149,23 @@ function prepare_game(data) {
 		} 
 		console.log(targetmultiplier + ' is target multipiler'); 
 
-		if ((curbet) > exitpoint) { 
-			curbet = exitopint * 0.3; 
+		if ((curbet) > exitpoint) {
+			if (randomten < 3) { 
+				curbet = beginningbet; 
+				console.log('set curbet back to beginning bet'); 
+			} else { 
+				curbet = exitopint * 1.3; 
+			}
+			
 		}
-
+		if (curbet)
+		var mycurbalance = Math.round(engine.getBalance()).toFixed(0)*100; 
+		console.log('balance before placing bet: ' + mycurbalance); 
+		if (mycurbalance - curbet <= exitpoint) {
+			console.log('adjusting bet so that we dont lose more than ' + exitpoint); 
+			curbet = beginningbet; 
+			console.log('new bet: ' + beginningbet); 
+		}
 		engine.placeBet(Math.round(curbet).toFixed(0)*100, targetmultiplier, false); 
 	} else { 
 		console.log('sitting this one out (' + sitoutcount + ' out of 3)');
@@ -271,7 +285,10 @@ function process_game_crash(data) {
 		lastbonus = 0; 
 		totalwagered = totalwagered + curbet; 
 		console.log('consecutive wins: ' + numconsecwins); 
+		var lastexitpoint = exitpoint; 
 		exitpoint += profitmade * 0.05; 
+
+		console.log('moved exitpoint from ' + lastexitpoint + ' to exitpoint (additional guranteed balance from original risk of ' + lastexitpoint - exitpoint); 
 		mylastcrash = lastcrash; 
 
 	} else if (crash_state == 'LOST') { 
