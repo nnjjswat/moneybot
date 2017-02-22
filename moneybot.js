@@ -1,3 +1,8 @@
+// DONATIONS: 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m
+
+// DONATIONS: 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m
+
+// DONATIONS: 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m 
 
 console.log('Written by @currentsea'); 
 console.log('STARTING CURRENTSEA v1.3'); 
@@ -34,7 +39,7 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 333; 
+var modifiedorigbetamount = 777; 
 var maxmoneythatcanbelost = 150000; 
 var gameselapsed = 0; 
 var lastcrash = 0; 
@@ -42,7 +47,7 @@ var ignore_randomized_bullshit = true;
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 333;
+var initialbetamount = 777;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 

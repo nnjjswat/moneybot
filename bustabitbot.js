@@ -2,6 +2,19 @@
 // version 2.2-beta */
 // MIT License
 
+
+/************ hey!!!! *****************/ 
+// Do you want more scripts like this? 
+
+// DONATIONS: 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m
+
+// DONATIONS: 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m
+
+// DONATIONS: 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m 
+
+// Support continued development by sending your donations to BTC address 1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m
+/**************READ ABOVE******************/ 
+
 // Copyright (c) 2017 Joe Bull
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +41,7 @@ var maxpercentloss = 0.3; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest p
 var betpercentage = 0.02; // will use 2% of bankroll minimum for each game 
 var myusername = 'beebo' // put your username here 
 var maxlosers = 10;  // maximum # of losing games before quitting
-var breakpoints = [164, 136, 127, 132, 176, 171, 129, 192, 177, 153, 168, 155, 145, 107, 158, 186, 131, 120, 158, 114, 147, 175, 132, 121, 128, 155, 149, 137, 143, 175, 165, 161, 165, 188, 136, 149, 105, 108, 109, 177, 177, 183, 183, 233, 162, 123, 166, 123, 123, 122,  185, 104, 104, 183, 107, 180, 143, 115, 125, 141, 164, 156, 132, 129, 299, 272, 227, 292, 223, 226, 252, 297, 264, 260, 218, 284, 239, 204, 261, 245, 275, 255, 273, 211, 256, 224, 219, 277, 271, 296, 206, 269, 238, 251, 239, 243, 240, 173, 298, 249, 125, 136, 131, 296, 128, 129, 292, 249, 159, 206, 242, 132, 296, 125, 253, 233, 289, 182, 124, 161, 167, 289, 286, 182, 268, 165, 190, 112, 231, 264, 257, 167, 246, 285, 227, 178, 138, 253, 146, 187, 119, 150, 206, 254, 1623, 161, 176, 183, 176, 186, 223, 333, 717]/** END USER CONFIG **/ 
+var breakpoints = [164, 136, 127, 132, 176, 171, 129, 192, 177, 153, 168, 155, 145, 107, 158, 186, 131, 120, 158, 114, 147, 175, 132, 121, 128, 155, 149, 137, 143, 175, 165, 161, 165, 188, 136, 149, 105, 108, 109, 177, 177, 183, 183, 233, 162, 123, 166, 123, 123, 122,  185, 104, 104, 183, 107, 180, 143, 115, 125, 141, 164, 156, 132, 129, 299, 272, 227, 292, 223, 226, 252, 297, 264, 260, 218, 241, 166, 181, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 838, 939, 828, 828, 1234, 1616, 9829, 202, 2020, 505, 202, 5085, 603, 102, 106, 126, 6561, 162, 167, 177, 177, 188, 191, 195, 195, 193, 193, 191, 1771, 171, 171,161, 133, 141, 161, 284, 239, 204, 261, 245, 275, 255, 273, 211, 256, 224, 219, 277, 271, 296, 206, 269, 238, 251, 239, 243, 240, 173, 298, 249, 125, 136, 131, 296, 128, 129, 292, 249, 159, 206, 242, 132, 296, 125, 253, 233, 289, 182, 124, 161, 167, 289, 286, 182, 268, 165, 190, 112, 231, 264, 257, 167, 246, 285, 227, 178, 138, 253, 146, 187, 119, 150, 206, 254, 1623, 161, 176, 183, 176, 186, 223, 333, 717]/** END USER CONFIG **/ 
 
 /** BEGIN VARIABLES **/ 
 var startingbalance = engine.getBalance() / 100; // do not touch 
@@ -78,6 +91,7 @@ var cur_random = Math.floor((Math.random() * 100) + 1); // do not touch
 var sitoutcount = 0; 
 var emergencycashouts = 0; 
 var sitoutthree = false; 
+var usesmallmultiplierforbiggain = false; 
 var originalexitpoint = exitpoint; 
 /** END VARIABLES VARIABLES **/ 
 
@@ -107,12 +121,7 @@ function prepare_game(data) {
 			console.log('Sitting out 3 games in a row starting the game after this one'); 
 			sitoutthree = true; 
 			sitoutcount = 0; 
-		} 
-
-		console.log('Preparing game'); 
-		console.log(data); 
-		console.log('current bet: ' + curbet); 
-
+		}
 		randomten = Math.floor((Math.random() * breakpoints.length) + 1);
 		var targetmultiplier = breakpoints[randomten]; 
 		if(numconseclosses > 3 && targetmultiplier < 200) { 
@@ -125,9 +134,6 @@ function prepare_game(data) {
 			} 
 		} 
 
-
-
-		console.log('RANDOM TEN: ' + randomten); 
 		var avghist = average(crashhistory); 
 		var avgmed = median(crashhistory); 
 
@@ -147,7 +153,6 @@ function prepare_game(data) {
 
 			targetmultiplier = breakpoints[randomten]; 
 		} 
-		console.log(targetmultiplier + ' is target multipiler'); 
 
 		if ((curbet) > exitpoint) {
 			if (randomten < 3) { 
@@ -158,7 +163,11 @@ function prepare_game(data) {
 			}
 			
 		}
-		if (curbet)
+
+		if (usesmallmultiplierforbiggain == true) { 
+			targetmultiplier = 1.25; 
+			curbet = curbet * 5; 
+		}
 		var mycurbalance = Math.round(engine.getBalance()).toFixed(0)*100; 
 		console.log('balance before placing bet: ' + mycurbalance); 
 		if (mycurbalance - curbet <= exitpoint) {
@@ -166,6 +175,11 @@ function prepare_game(data) {
 			curbet = beginningbet; 
 			console.log('new bet: ' + beginningbet); 
 		}
+
+
+		console.log(targetmultiplier + ' is target multipiler'); 
+		console.log(curbet + ' is current bet'); 
+
 		engine.placeBet(Math.round(curbet).toFixed(0)*100, targetmultiplier, false); 
 	} else { 
 		console.log('sitting this one out (' + sitoutcount + ' out of 3)');
@@ -291,6 +305,11 @@ function process_game_crash(data) {
 		var profitof = exitpoint - originalexitpoint; 
 		console.log('moved exitpoint from ' + lastexitpoint + ' to exitpoint (additional guranteed balance from original risk of ' + originalexitpoint + ' to ' + exitpoint + ' (profit of ' + profitof + ')'); 
 		mylastcrash = lastcrash; 
+		if (usesmallmultiplierforbiggain == true) { 
+			usesmallmultiplierforbiggain = false; 
+			curbet = beginningbet; 
+			console.log('reverting to initialbet as we used a small multiplier for a bigger gain successfully'); 
+		} 
 
 	} else if (crash_state == 'LOST') { 
 		gameslost++; 
@@ -308,6 +327,10 @@ function process_game_crash(data) {
 		if (curbet < (beginningbet * 0.8)) {
 			curbet = beginningbet; 
 		}
+
+		if (usesmallmultiplierforbiggain == true) { 
+			curbet = curbet * 2; 
+		} 
 		
 		console.log('consecutive losses: ' + numconseclosses); 
 		mylastcrash = lastcrash; 
@@ -355,6 +378,11 @@ function process_game_crash(data) {
 	numplayerscashedoutbelow120 = 0; 
 	sumofcashedoutmultipliersbelow120 = 0; 
 	userlist = []; 
+
+	if (numconsecreds > 4 && numconseclosses > 3 && cur_random % 2 ==0) { 
+		usesmallmultiplierforbiggain = true; 
+
+	} 
 
 } 
 
