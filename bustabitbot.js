@@ -286,9 +286,10 @@ function process_game_crash(data) {
 		totalwagered = totalwagered + curbet; 
 		console.log('consecutive wins: ' + numconsecwins); 
 		var lastexitpoint = exitpoint; 
-		exitpoint += profitmade * 0.05; 
-
-		console.log('moved exitpoint from ' + lastexitpoint + ' to exitpoint (additional guranteed balance from original risk of ' + lastexitpoint - exitpoint); 
+		exitpoint = exitpoint + (profitmade * 0.5); 
+		// var newexitpoint = lastexitpoint - exitpoint; 
+		var profitof = exitpoint - originalexitpoint; 
+		console.log('moved exitpoint from ' + lastexitpoint + ' to exitpoint (additional guranteed balance from original risk of ' + originalexitpoint + ' to ' + exitpoint + ' (profit of ' + profitof + ')'); 
 		mylastcrash = lastcrash; 
 
 	} else if (crash_state == 'LOST') { 
@@ -298,6 +299,16 @@ function process_game_crash(data) {
 		numconsecskipped = 0; 
 		moneylost = moneylost + curbet; 
 		totalwagered = totalwagered + curbet; 
+		if (cur_random % 2 == 0) { 
+			curbet = curbet * 1.1; 
+		} else { 
+			curbet = curbet * 0.9; 
+		}
+
+		if (curbet < (beginningbet * 0.8)) {
+			curbet = beginningbet; 
+		}
+		
 		console.log('consecutive losses: ' + numconseclosses); 
 		mylastcrash = lastcrash; 
 	} else { 
