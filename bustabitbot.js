@@ -24,16 +24,17 @@
 
 
 /** BEGIN USER CONFIG **/ 
-var maxpercentloss = 0.8; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
-var betpercentage = 0.03; // will use 2% of bankroll minimum for each game 
+var maxpercentloss = 0.3; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
+var betpercentage = 0.02; // will use 2% of bankroll minimum for each game 
 var myusername = 'beebo' // put your username here 
-var breakpoints = [ 311, 211, 161, 121, 171, 373, 573, 161, 111, 101, 141, 166, 222, 111, 141, 161, 123, 171, 133, 177, 182, 222, 2233, 222, 171, 1011, 105, 106, 106, 188, 172, 101, 102, 103, 104, 107, 108, 109, 110, 116, 118, 119, 131, 111, 118, 148, 111, 131, 161, 171, 181, 191, 123, 161, 181, 183, 183, 196, 186, 173, 176, 1762, 172, 171, 183, 166, 186, 183, 121, 161, 106, 107, 103, 106, 107, 168, 179, 321, 141, 163, 1666, 1777, 1888, 121, 121, 163, 163, 166, 177, 182, 132, 165, 203, 103, 123, 123, 112, 111, 105, 106, 107, 1111, 111111, 106, 108, 105, 662, 1234, 234, 622, 234, 106, 106, 283, 223, 116, 116, 776, 223, 116, 117, 118, 181, 191, 175, 171, 161, 166, 171, 181, 121, 111, 111, 111, 111, 166, 161, 171, 421, 127, 177, 199, 191, 181, 127, 137, 178, 272, 108, 118, 172, 872, 323, 178, 166, 161, 171, 832, 823, 171, 283, 182, 171, 100062, 106, 685, 283, 128, 183, 186, 181, 133, 161, 183, 232, 161, 173, 333, 161, 443, 485, 133, 194, 196, 186, 102, 303, 106, 107, 116, 118, 166, 199, 165, 115, 105]
-/** END USER CONFIG **/ 
+var maxlosers = 10;  // maximum # of losing games before quitting
+var breakpoints = [164, 136, 127, 132, 176, 171, 129, 192, 177, 153, 168, 155, 145, 107, 158, 186, 131, 120, 158, 114, 147, 175, 132, 121, 128, 155, 149, 137, 143, 175, 165, 161, 165, 188, 136, 149, 105, 108, 109, 177, 177, 183, 183, 233, 162, 123, 166, 123, 123, 122,  185, 104, 104, 183, 107, 180, 143, 115, 125, 141, 164, 156, 132, 129, 299, 272, 227, 292, 223, 226, 252, 297, 264, 260, 218, 284, 239, 204, 261, 245, 275, 255, 273, 211, 256, 224, 219, 277, 271, 296, 206, 269, 238, 251, 239, 243, 240, 173, 298, 249, 125, 136, 131, 296, 128, 129, 292, 249, 159, 206, 242, 132, 296, 125, 253, 233, 289, 182, 124, 161, 167, 289, 286, 182, 268, 165, 190, 112, 231, 264, 257, 167, 246, 285, 227, 178, 138, 253, 146, 187, 119, 150, 206, 254, 1623, 161, 176, 183, 176, 186, 223, 333, 717]/** END USER CONFIG **/ 
 
 /** BEGIN VARIABLES **/ 
 var startingbalance = engine.getBalance() / 100; // do not touch 
 var exitpoint = startingbalance - (startingbalance * maxpercentloss);  // do not touch 
 var currentlyplaying = false; 
+var profitmade = 0; // do not touch 
 var gameselapsed = 0; //do not touch
 var gamesplayed = 0; // do not touch 
 var gameswon = 0; // do not touch 
@@ -114,14 +115,17 @@ function prepare_game(data) {
 		randomten = Math.floor((Math.random() * breakpoints.length) + 1);
 		var targetmultiplier = breakpoints[randomten]; 
 		if(numconseclosses > 3 && targetmultiplier < 200) { 
-			curbet = curbet * 3; 
+			curbet = curbet * 1.013; 
 		} else if (numconsecreds > 8) { 
-			curbet = curbet * 3
-			targetmultiplier = targetmultiplier * 1.3
+			curbet = curbet * 1.025
+			targetmultiplier = targetmultiplier * 1.03
 			if (targetmultiplier > 400) { 
 				targetmultiplier = 400; 
 			} 
 		} 
+
+
+
 		console.log('RANDOM TEN: ' + randomten); 
 		var avghist = average(crashhistory); 
 		var avgmed = median(crashhistory); 
@@ -129,12 +133,25 @@ function prepare_game(data) {
 		if (avgmed > targetmultiplier && gameselapsed > 10 && numconsecreds > 3) { 
 			targetmultiplier = targetmultiplier * 2; 
 		} 
+
+		if (avgmed % 2 ==0) { 
+			curbet = curbet * 0.998; 
+		} else { 
+			curbet = curbet * 1.1; 
+		} 
+		
+
 		if (targetmultiplier == undefined) { 
 			randomten = Math.floor((Math.random() * breakpoints.length) + 1);
 
 			targetmultiplier = breakpoints[randomten]; 
 		} 
 		console.log(targetmultiplier + ' is target multipiler'); 
+
+		if ((curbet) > exitpoint) { 
+			curbet = exitopint * 0.3; 
+		}
+
 		engine.placeBet(Math.round(curbet).toFixed(0)*100, targetmultiplier, false); 
 	} else { 
 		console.log('sitting this one out (' + sitoutcount + ' out of 3)');
@@ -166,7 +183,7 @@ function process_player_cashout(data) {
 			console.log('another emergency cashout'); 
 		}
 
-		if (cashoutanyway % 23 == 0 && currentlyplaying == true) { 
+		if (cashoutanyway % 4 == 0 && currentlyplaying == true) { 
 				engine.cashOut(cashout_cb); 
 				emergencycashouts++; 
 				console.log('emergency cashout');			
@@ -199,7 +216,7 @@ function process_player_cashout(data) {
 			console.log(myusername + ' cash out'); 
 			console.log(myusername + ' bet: ' + curbet); 
 			var winningpayout = curbet * crashdecimal; 
-			var profitmade = winningpayout - curbet; 
+			profitmade = winningpayout - curbet; 
 			moneywon = moneywon + profitmade; 
 			console.log('winningpayout: ' + winningpayout); 
 			console.log('total payout: ' + profitmade); 
@@ -254,7 +271,9 @@ function process_game_crash(data) {
 		lastbonus = 0; 
 		totalwagered = totalwagered + curbet; 
 		console.log('consecutive wins: ' + numconsecwins); 
+		exitpoint += profitmade * 0.05; 
 		mylastcrash = lastcrash; 
+
 	} else if (crash_state == 'LOST') { 
 		gameslost++; 
 		numconseclosses++; 
@@ -270,6 +289,7 @@ function process_game_crash(data) {
 		numconsecskipped = 0; 
 		console.log('consecutive games skipped: ' + numconsecskipped); 
 	}
+	profitmade = 0; 
 	console.log('---'); 
 	console.log('games elapsed: ' + gameselapsed); 
 	console.log('games played: ' + gamesplayed); 
@@ -295,6 +315,12 @@ function process_game_crash(data) {
 		console.log('exit point threshold reached, stoppping script via failsafe'); 
 		engine.stop(); 
 	} 
+
+	if (gameslost >= maxlosers) { 
+		console.log('Max losers of ' + maxlosers + ' reached. Stopping the script.'); 
+		engine.stop(); 
+	} 
+
 	tablecashedout = 0; 
 	wageredbelow120 = 0; 
 	cashedoutbelow120 = 0; 

@@ -14,7 +14,7 @@ var numgameslost = 0;
 var gamesplayed = 0; 
 var numgreenswon = 0; 
 var numgreenslost = 0; 
-var maxlosers = 22; 
+var maxlosers = 10; 
 var numredslost = 0; 
 var lastcurbal = 0; 
 var numredsskipped = 0; 
@@ -34,7 +34,7 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 1077; 
+var modifiedorigbetamount = 333; 
 var maxmoneythatcanbelost = 150000; 
 var gameselapsed = 0; 
 var lastcrash = 0; 
@@ -42,7 +42,7 @@ var ignore_randomized_bullshit = true;
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 1077;
+var initialbetamount = 333;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -81,7 +81,7 @@ function process_player_cashout(data) {
 	var initialbet = initialbetamount; 
 	if (cashed_out == true ) { 
 
-	} else if (ignore_randomized_bullshit == false && curpayout < 1.05) { 
+	} else if (cur_random % 6 == 0 || ignore_randomized_bullshit == false && curpayout < 1.05) { 
 		curpayout = engine.getCurrentPayout(); 
 		var dblpayout = curpayout * 2; 
 		if (numconseclosses > 2 && dblpayout > lastcashoutmultiplier && lastcrash < 155) { 
@@ -364,7 +364,7 @@ function play_game(info) {
 		var tehbal = engine.getBalance()
 
 		lastcurbal = tehbal;
-		if (tehbal < 2113420) { 
+		if (tehbal < 2313420) { 
 			console.log('failsafe'); 
 			engine.stop(); 
 		}
