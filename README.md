@@ -5,21 +5,21 @@ Welcome to project moneybot.
 * You are more than welcome to submit your own scripts to this repository.  Please create a pull request and as long as nothing looks completely crazy, i'll pull it into the master branch! 
 * If you would like a script that you don't see in the repository, feel free to *create an issue* describing what your script should do and hopefully someone will make your idea a reality! 
 
-## Disclaimer
+### Disclaimer
 * **Use at your own risk**
 * I am in no way affiliated with bustabit or moneypot 
 * I made this for fun
 
-# Continued Development
+### Continued Development
 * **Do you like this project?**
 * Continued development and improvements on this documentation as well as the scripts is all done via volunteer work free of charge by myself.  If you would like to support this project, **even the smallest donatio
 n is greatly appreciated**.  Donations can be sent to the BTC address shown below (**`1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m`**). 
 ![1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m](http://i.imgur.com/zWUEHjH.png)
 
-## License & Copyright 
+### License & Copyright 
 
 ```
-Copyright (c) 2017 Joe 'currentsea' Bull
+Copyright (c) 2017 Joseph 'currentsea' Bull
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
