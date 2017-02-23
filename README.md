@@ -1,5 +1,7 @@
 # moneybot
 
+* For more information, check out the wiki: https://github.com/currentsea/moneybot/wiki
+
 # DONATIONS
 * send donations to `1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m` to support continued dev
 ```
