@@ -13,5 +13,5 @@ Welcome to project moneybot.
 # Continued Development
 * **Do you like this project?**
 * Continued development and improvements on this documentation as well as the scripts is all done via volunteer work free of charge by myself.  If you would like to support this project, **even the smallest donatio
-n is greatly appreciated**.  Donations can be sent to the BTC address shown below. 
+n is greatly appreciated**.  Donations can be sent to the BTC address shown below (**`1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m`**). 
 ![1AVoq4UTbJS42cUq85WN7yRQHoxHtxKA7m](http://i.imgur.com/zWUEHjH.png)
