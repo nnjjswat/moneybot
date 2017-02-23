@@ -1,4 +1,3 @@
-# Moneybot
 Welcome to project moneybot.
 * For more information, check out the wiki: https://github.com/currentsea/moneybot/wiki
 
