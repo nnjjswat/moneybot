@@ -11,6 +11,7 @@ var numgamesnotplayed = 0;
 var numgamesplayed = 0; 
 var numgameswon = 0; 
 var numconsecwins = 0; 
+var maxloss = 0; 
 var tablecurrentwager = 0.0;
 var numconecwins = 0;  
 var totalcashedout = 0; 
@@ -27,6 +28,7 @@ var highestbet = 0;
 var numconsecreds = 0; 
 var multiplier = 0; 
 var totalmoneylost = 0; 
+var maxbet = 700; 
 var numredswon = 0; 
 var maxgames = 250; 
 var lastcashoutmultiplier = 0; 
@@ -86,7 +88,7 @@ function process_player_cashout(data) {
 	var initialbet = initialbetamount; 
 	if (cashed_out == true ) { 
 
-	} else if (cur_random % 6 == 0 || ignore_randomized_bullshit == false && curpayout < 1.05) { 
+	} else if (cur_random %  2 == 0 || ignore_randomized_bullshit == false && curpayout < 1.05) { 
 		curpayout = engine.getCurrentPayout(); 
 		var dblpayout = curpayout * 2; 
 		if (numconseclosses > 2 && dblpayout > lastcashoutmultiplier && lastcrash < 155) { 
@@ -156,13 +158,13 @@ function process_player_cashout(data) {
 		if (cur_random >= 94) { 
 			cashouttarget = gamedata.table_total; 
 		} else if (cur_random > 77 && cur_random < 94) { 
-			cashouttarget = gamedata.table_total * 1.12
+			cashouttarget = gamedata.table_total * 0.9; 
 		} else if (cur_random >= 60 && cur_random <= 77) { 
 			cashouttarget = gamedata.table_total * 0.6723; 
 		} else if (cur_random > 50 && cur_random < 60) { 
-			cashouttarget = gamedata.table_total * 0.7; 
+			cashouttarget = gamedata.table_total * 6.7; 
 		} else if (cur_random >=35 && cur_random <= 50) { 
-			cashouttarget = gamedata.table_total * 1.2; 
+			cashouttarget = gamedata.table_total * 0.2; 
 		} else { 
 			cashouttarget = gamedata.table_total * 1.1; 
 		}
@@ -172,7 +174,7 @@ function process_player_cashout(data) {
 		} 
 
 
-		if (numconsecreds > 6) { 
+		if (numconsecreds > 3) { 
 			cashouttarget = cashouttarget * 3; 
 		} 
 
@@ -369,7 +371,7 @@ function play_game(info) {
 		var tehbal = engine.getBalance()
 
 		lastcurbal = tehbal;
-		if (tehbal < 2313420) { 
+		if (tehbal < maxloss) { 
 			console.log('failsafe'); 
 			engine.stop(); 
 		}
@@ -501,6 +503,10 @@ function play_game(info) {
 		} 
 		console.log('using multiplier ' + multiplier); 
 
+
+		if (initialbetamount > maxbet) { 
+			initialbetamount = maxbet; 
+		} 
 
 
 		engine.placeBet(Math.round(initialbetamount).toFixed(0)*100, multiplier, false); 
