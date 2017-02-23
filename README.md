@@ -1,6 +1,8 @@
 Welcome to project moneybot.
 * For more information, check out the wiki: https://github.com/currentsea/moneybot/wiki
 
+[Want to ask **currentsea** a question and get a guranteed response?](https://21.co/currentsea/)
+
 ### Improvements / Additions
 * You are more than welcome to submit your own scripts to this repository.  Please create a pull request and as long as nothing looks completely crazy, i'll pull it into the master branch! 
 * If you would like a script that you don't see in the repository, feel free to *create an issue* describing what your script should do and hopefully someone will make your idea a reality! 
