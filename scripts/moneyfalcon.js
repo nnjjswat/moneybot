@@ -24,7 +24,7 @@
 // SOFTWARE.
 /* END LICENSE */ 
 
-var startingbet = 0; 
+var startingbet = 1; 
 var betincrement = 1.065; 
 var takeprofitpoint = 1899; 
 var takeprofitincrementinterval = 0.9999; 
@@ -44,6 +44,13 @@ var gamehistory = {};
 var gameresults = []; 
 var median = 197; 
 console.log('starting median: ' + median); 
+
+
+var currentbet = startingbet; 
+var state = 0; 
+var multiplier = takeprofitpoint; 
+var triggeredbusts = 0; 
+var losingsteak = 0; 
 
 var grosswinnings = 0; 
 var grosslosses = 0; 
@@ -88,11 +95,6 @@ function cashout(gamedata) {
 function play_game(gamedata) { 
     console.log("we are now playing the game"); 
 }
-
-function finish_game(gamedata) { 
-    console.log("game finished"); 
-    gameselapsed++; 
-} 
 /** END ENGINE LOGIC */ 
 
 /** HELPERS */ 
@@ -125,7 +127,7 @@ function log_pre_game_data(gamedata) {
 
 function log_post_game_data(gamedata) { 
     console.log('--------------------------------------------'); 
-    console.log('Game is starting - JSON shown below'); 
+    console.log('Game is finished - JSON shown below'); 
     console.log(JSON.stringify(gamedata)); 
 } 
 
