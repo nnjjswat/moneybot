@@ -24,6 +24,8 @@
 // SOFTWARE.
 /* END LICENSE */ 
 
+
+/** VARIABLE DECLARATIONS */ 
 var startingbet = 1; 
 var betincrement = 1.065; 
 var takeprofitpoint = 1899; 
@@ -36,37 +38,30 @@ var maxwinninggames = 33;
 var maxlosinggames = 33; 
 var resetlosscountonwin = false; 
 var winningstreakbetincrement = 1; 
-var abortwhenmedianfails = 0; // =0 to only abort failed streaks with maxlosingstreakcutoff counter, set to =1 to abort failed streaks when data model median > medianupperlimit as configured in the line above
-var abortonfailedentrycriteria = 0; // =0 to only abort failed streaks with maxlosingstreakcutoff counter, set to =1 to abort failed streaks when entrycriteria > last bust as configured above
-var botpriority = 1;    // =1 to be first priority bot, =2 second priority bot, =3 third priority bot strategy to execute a bet when running on same account
-
-var gamehistory = {}; 
+var abortwhenmedianfails = 0; 
+var abortonfailedentrycriteria = 0; 
+var botpriority = 1;    
+var gamehistory = [];  
 var gameresults = []; 
 var median = 197; 
 console.log('starting median: ' + median); 
-
-
 var currentbet = startingbet; 
-var state = 0; 
-var multiplier = takeprofitpoint; 
+var multiplier = takeprofitpoint;
 var triggeredbusts = 0; 
-var losingsteak = 0; 
-
 var grosswinnings = 0; 
 var grosslosses = 0; 
-
 var numwinners = 0; 
 var numlosers = 0; 
 var netprofits = 0; 
-var winrate = 0; 
 var totalprofit = 0; 
+var losingsteak = 0; 
 var paperbetting = 0; 
 var moneybotlength = 0; 
 var moneybotconfirmations = 0;
-
 var gameselapsed = 0; 
-
 var verbose = false; 
+var state = 0; 
+var winrate = 0;
 
 /** BEGIN ENGINE INSTRUCTIONS */ 
 engine.on('game_starting', start_game); 
@@ -75,11 +70,33 @@ engine.on('game_started', play_game);
 
 engine.on('game_crash', finish_game); 
 
+engine.on('player_bet', process_player_bet); 
+
 engine.on('cashed_out', cashout); 
+
+engine.on('connected', script_connected); 
+
+engine.on('disconnected', script_disconnected); 
+
 /** END ENGINE INSTRUCTIONS */ 
 
 
 /** BEGIN ENGINE LOGIC */ 
+function script_connected(gamedata) { 
+    console.log('script connected'); 
+    console.log('game history shown below upon connection'); 
+    console.log(JSON.stringify(gamehistory)); 
+} 
+
+function script_disconnected(gamedata) { 
+    console.log('script disconnected, stopping all bets if one in progress...'); 
+    engine.cashOut(cocallback);
+    console.log('summarizing game history - JSON shown below'); 
+    console.log(JSON.stringify(gamehistory)); 
+    console.log('stopping script'); 
+    engine.stop();  
+}
+
 function start_game(gamedata) { 
     log_pre_game_data(gamedata); 
     calculate_net_profits(); 
@@ -94,6 +111,11 @@ function cashout(gamedata) {
 
 function play_game(gamedata) { 
     console.log("we are now playing the game"); 
+}
+
+function process_player_bet(gamedata) { 
+    console.log('player bet occurred'); 
+    console.log(JSON.stringify(gamedata)); 
 }
 /** END ENGINE LOGIC */ 
 
@@ -114,6 +136,7 @@ function median(values) {
 
 function finish_game(gamedata) { 
     console.log("Game is finished"); 
+    console.log(gamedata); 
     log_post_game_data(gamedata); 
     gameselapsed = gameselapsed + 1; 
 }
@@ -129,6 +152,8 @@ function log_post_game_data(gamedata) {
     console.log('--------------------------------------------'); 
     console.log('Game is finished - JSON shown below'); 
     console.log(JSON.stringify(gamedata)); 
+    gamehistory.push(gamedata); 
+
 } 
 
 function log_cashout_data(gamedata) { 
@@ -179,5 +204,8 @@ function summarize() {
     console.log('==> # of games elapsed: ' + gameselapsed); 
 }
 
+function cocallback(gamedata) { 
+    console.log("Cashed out!"); 
+} 
 
 
