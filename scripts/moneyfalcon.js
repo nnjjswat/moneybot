@@ -31,32 +31,19 @@ var takeprofitincrementinterval = 0.9999;
 var playgamecriteria = 1866; 
 var gamewaitcount = 3; 
 var moneybot = 0; 
-var median6upper = 1.96; 
+var medianupper = 1.96; 
 var maxwinninggames = 33; 
 var maxlosinggames = 33; 
 var resetlosscountonwin = false; 
 var winningstreakbetincrement = 1; 
-var abortwhenmedianfails = 0; // =0 to only abort failed streaks with maxlosingstreakcutoff counter, set to =1 to abort failed streaks when data model median6 > median6upperlimit as configured in the line above
+var abortwhenmedianfails = 0; // =0 to only abort failed streaks with maxlosingstreakcutoff counter, set to =1 to abort failed streaks when data model median > medianupperlimit as configured in the line above
 var abortonfailedentrycriteria = 0; // =0 to only abort failed streaks with maxlosingstreakcutoff counter, set to =1 to abort failed streaks when entrycriteria > last bust as configured above
 var botpriority = 1;    // =1 to be first priority bot, =2 second priority bot, =3 third priority bot strategy to execute a bet when running on same account
 
 var gamehistory = {}; 
-// gamehistory['0'] = 197; 
-// gamehistory['1'] = 197; 
-// gamehistory['2'] = 197; 
-// gamehistory['3'] = 197; 
-// gamehistory['4'] = 197; 
-// gamehistory['5'] = 197; 
-// gamehistory['6'] = 197; 
 var gameresults = []; 
-// gameresults.push(197);
-// gameresults.push(197);
-// gameresults.push(197);
-// gameresults.push(197);
-// gameresults.push(197);
-// gameresults.push(197);
-var median6 = 197; 
-console.log('starting median over last 6 games: ' + median6); 
+var median = 197; 
+console.log('starting median: ' + median); 
 
 var grosswinnings = 0; 
 var grosslosses = 0; 
@@ -72,6 +59,7 @@ var moneybotconfirmations = 0;
 
 var gameselapsed = 0; 
 
+var verbose = false; 
 
 /** BEGIN ENGINE INSTRUCTIONS */ 
 engine.on('game_starting', start_game); 
@@ -80,8 +68,7 @@ engine.on('game_started', play_game);
 
 engine.on('game_crash', finish_game); 
 
-
-// engine.on('cashed_out', process_player_cashout); 
+engine.on('cashed_out', cashout); 
 /** END ENGINE INSTRUCTIONS */ 
 
 
@@ -94,6 +81,9 @@ function start_game(gamedata) {
     summarize(); 
 }
 
+function cashout(gamedata) { 
+    log_cashout_data(gamedata); 
+} 
 
 function play_game(gamedata) { 
     console.log("we are now playing the game"); 
@@ -127,6 +117,7 @@ function finish_game(gamedata) {
 }
 
 function log_pre_game_data(gamedata) { 
+
     console.log('--------------------------------------------'); 
     console.log('Game is starting - JSON shown below'); 
     console.log(JSON.stringify(gamedata)); 
@@ -136,6 +127,14 @@ function log_post_game_data(gamedata) {
     console.log('--------------------------------------------'); 
     console.log('Game is starting - JSON shown below'); 
     console.log(JSON.stringify(gamedata)); 
+} 
+
+function log_cashout_data(gamedata) { 
+    if (verbose) {
+        console.log('--------------------------------------------'); 
+        console.log('Player cashed out - JSON shown below'); 
+        console.log(JSON.stringify(gamedata)); 
+    }
 } 
 
 function calculate_win_rate() { 
