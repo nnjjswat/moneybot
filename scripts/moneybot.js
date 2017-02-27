@@ -28,7 +28,7 @@ var highestbet = 0;
 var numconsecreds = 0; 
 var multiplier = 0; 
 var totalmoneylost = 0; 
-var maxbet = 4444; 
+var maxbet = 1222; 
 var numredswon = 0; 
 var maxgames = 250; 
 var lastcashoutmultiplier = 0; 
@@ -41,7 +41,7 @@ var rollingaverage = 0;
 var actualprofit = 0; 
 var bustcumulativetotal = 0;  
 var totalmoneywon = 0; 
-var modifiedorigbetamount = 777; 
+var modifiedorigbetamount = 333; 
 var maxmoneythatcanbelost = 150000; 
 var gameselapsed = 0; 
 var lastcrash = 0; 
@@ -49,7 +49,7 @@ var ignore_randomized_bullshit = true;
 var paperprofit = 0; 
 var numskipped = 0; 
 var gamedata = {}; 
-var initialbetamount = 777;
+var initialbetamount = 333;
 var originalbetamount = initialbetamount; 
 var tpi = 200; 
 var starting_balance = engine.getBalance(); 
@@ -162,9 +162,9 @@ function process_player_cashout(data) {
 		} else if (cur_random >= 60 && cur_random <= 77) { 
 			cashouttarget = gamedata.table_total * 0.6723; 
 		} else if (cur_random > 50 && cur_random < 60) { 
-			cashouttarget = gamedata.table_total * 6.7; 
+			cashouttarget = gamedata.table_total * 88.7; 
 		} else if (cur_random >=35 && cur_random <= 50) { 
-			cashouttarget = gamedata.table_total * 0.2; 
+			cashouttarget = gamedata.table_total * 0.3; 
 		} else { 
 			cashouttarget = gamedata.table_total * 1.1; 
 		}
