@@ -26,6 +26,7 @@
 
 
 /** VARIABLE DECLARATIONS */ 
+var username = 'beebo' 
 var startingbet = 1; 
 var betincrement = 1.065; 
 var takeprofitpoint = 1899; 
@@ -78,12 +79,14 @@ engine.on('connected', script_connected);
 
 engine.on('disconnected', script_disconnected); 
 
+engine.on('msg', process_chat_message); 
 /** END ENGINE INSTRUCTIONS */ 
 
 
 /** BEGIN ENGINE LOGIC */ 
 function script_connected(gamedata) { 
     console.log('script connected'); 
+    // chat.say("Hello guys!"); 
     console.log('game history shown below upon connection'); 
     console.log(JSON.stringify(gamehistory)); 
 } 
@@ -117,6 +120,27 @@ function process_player_bet(gamedata) {
     console.log('player bet occurred'); 
     console.log(JSON.stringify(gamedata)); 
 }
+
+function process_chat_message(gamedata) { 
+    console.log('--------- CHAT MESSAGE BELOW -----------'); 
+    console.log(JSON.stringify(gamedata)); 
+    if (gamedata.username == username) { 
+
+        if (gamedata.message == 'FALCON stop') { 
+            console.log('FALCON is stopping'); 
+            engine.chat('[BOT]: FALCON BOT stopping'); 
+            engine.stop(); 
+        }
+
+        if (gamedata.message == 'FALCON status') { 
+            console.log('FALCON is online'); 
+            engine.chat('[BOT]: FALCON BOT is online +'); 
+            // engine.stop(); 
+        }
+        // console.log('MESSAGE IS FROM FALCON MASTER'); 
+    }
+    console.log('---------- END CHAT MESSAGE ------------');
+} 
 /** END ENGINE LOGIC */ 
 
 /** HELPERS */ 
