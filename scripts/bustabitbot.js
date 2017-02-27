@@ -41,7 +41,7 @@
 var starting = engine.getBalance() / 100; 
 console.log('starting balance: ' + starting); 
 var maxpercentloss = 0.9; // 0.1 = 10%, 0.5 = 50%, etc, set this to the lowest point where the script will cut off at (0.5 = script cuts off at 50% of account)
-var betpercentage = 0.03755; // will use 2% of bankroll minimum for each game 
+var betpercentage = 0.01755; // will use 2% of bankroll minimum for each game 
 var myusername = 'beebo' // put your username here 
 var maxlosers = 190;  // maximum # of losing games before quitting
 var maxbetamount = 2000; // max bet to ever place 

@@ -44,8 +44,8 @@ var abortonfailedentrycriteria = 0;
 var botpriority = 1;    
 var gamehistory = [];  
 var gameresults = []; 
-var median = 197; 
-console.log('starting median: ' + median); 
+var historicalmedian = 197; 
+console.log('starting median: ' + historicalmedian); 
 var currentbet = startingbet; 
 var multiplier = takeprofitpoint;
 var triggeredbusts = 0; 
@@ -86,7 +86,7 @@ engine.on('msg', process_chat_message);
 /** BEGIN ENGINE LOGIC */ 
 function script_connected(gamedata) { 
     console.log('script connected'); 
-    // chat.say("Hello guys!"); 
+    engine.chat("[MONEYFALCON] The money falcon has come online"); 
     console.log('game history shown below upon connection'); 
     console.log(JSON.stringify(gamehistory)); 
 } 
@@ -117,27 +117,41 @@ function play_game(gamedata) {
 }
 
 function process_player_bet(gamedata) { 
-    console.log('player bet occurred'); 
-    console.log(JSON.stringify(gamedata)); 
+    if (verbose == true) { 
+        console.log('player bet occurred'); 
+        console.log(JSON.stringify(gamedata)); 
+    } 
 }
 
 function process_chat_message(gamedata) { 
     console.log('--------- CHAT MESSAGE BELOW -----------'); 
     console.log(JSON.stringify(gamedata)); 
-    if (gamedata.username == username) { 
+    if (gamedata.username == 'beebo') { 
 
         if (gamedata.message == 'FALCON stop') { 
             console.log('FALCON is stopping'); 
-            engine.chat('[BOT]: FALCON BOT stopping'); 
+            engine.chat('[FALCONBOT]: FALCON BOT stopping'); 
             engine.stop(); 
         }
 
         if (gamedata.message == 'FALCON status') { 
             console.log('FALCON is online'); 
-            engine.chat('[BOT]: FALCON BOT is online +'); 
-            // engine.stop(); 
+            engine.chat('[FALCONBOT]: FALCON BOT is online +'); 
         }
-        // console.log('MESSAGE IS FROM FALCON MASTER'); 
+
+        if (gamedata.message == 'FALCON gamecount') { 
+            console.log('FALCON is online'); 
+            var gamesplayedcount = numwinners + numlosers; 
+            engine.chat('[FALCONBOT]: Games Played: ' + gamesplayedcount + ' | Games Elapsed: ' + gameselapsed + ' | Games Won: ' + numwinners + ' | Games Lost: ' + numlosers + " | Median: " + historicalmedian); 
+        }
+
+
+
+        // if (gamedata.message == 'FALCON doubler') { 
+        //     console.log('FALCON will attempt to double ' + )
+        // } 
+
+
     }
     console.log('---------- END CHAT MESSAGE ------------');
 } 
@@ -147,15 +161,15 @@ function process_chat_message(gamedata) {
 function median(values) {
     values.sort( function(a,b) {return a - b;} );
     var half = Math.floor(values.length/2);
-    var median = 0; 
+    var themedian = 0; 
     if (values.length % 2 == 0) { 
-        median = values[half];
+        themedian = values[half];
     }
     else { 
         var numerator = (values[half-1] + values[half]); 
-        median =  numerator / 2.0;
+        themedian =  numerator / 2.0;
     }
-    return median; 
+    return themedian; 
 }
 
 function finish_game(gamedata) { 
@@ -175,17 +189,31 @@ function log_pre_game_data(gamedata) {
 function log_post_game_data(gamedata) { 
     console.log('--------------------------------------------'); 
     console.log('Game is finished - JSON shown below'); 
-    console.log(JSON.stringify(gamedata)); 
+    // console.log(JSON.stringify(gamedata)); 
     gamehistory.push(gamedata); 
+    // console.log(JSON.stringify(gamehistory)); 
+    summarize_history(); 
+    console.log('MEDIAN: ' + historicalmedian); 
 
 } 
 
 function log_cashout_data(gamedata) { 
-    if (verbose) {
+    if (verbose == true) {
         console.log('--------------------------------------------'); 
         console.log('Player cashed out - JSON shown below'); 
         console.log(JSON.stringify(gamedata)); 
     }
+} 
+
+function summarize_history() { 
+    medianvalues = []; 
+
+    for (var gamehistoryitem in gamedata) {
+      // sum += item;
+      medianvalues.push(gamehistoryitem.game_crash); 
+    }
+    historicalmedian = median(medianvalues); 
+
 } 
 
 function calculate_win_rate() { 
@@ -226,6 +254,7 @@ function summarize() {
     console.log('==> # of games lost: ' + numlosers); 
     console.log('==> % of games won: ' + winrate + numlosers); 
     console.log('==> # of games elapsed: ' + gameselapsed); 
+
 }
 
 function cocallback(gamedata) { 
