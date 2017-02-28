@@ -26,10 +26,11 @@
 
 
 /** VARIABLE DECLARATIONS */ 
-var username = 'MountainDew' 
+var username = 'beebo' 
 var startingbet = 1; 
 var betincrement = 1.065; 
 var takeprofitpoint = 1899; 
+var gamesplayedcount = 0; 
 var takeprofitincrementinterval = 0.9999; 
 var playgamecriteria = 1866; 
 var gamewaitcount = 3; 
@@ -75,6 +76,10 @@ var laststatus = engine.lastGamePlay();
 var targetmimic = 'MountainDew'; 
 var curgamerecord = {}; 
 var usersplaying = []; 
+var falconexample = "FALCON mimic abc";
+var mimicbet = 0; 
+var falconregexp = /(?:^|\s)FALCON\s(.*?)\s(.*?)\s(.*)(?:\s|$)/g;
+
 
 /** BEGIN ENGINE INSTRUCTIONS */ 
 engine.on('game_starting', start_game); 
@@ -121,14 +126,15 @@ function start_game(gamedata) {
     pregamebalance = engine.getBalance(); 
 
     if (mimic == true) { 
-        var thebet = (engine.getBalance() / 100) * 0.05; 
+        currentbet = mimicbet; 
         var themultiplier = 1000; 
-        currentbet = thebet; 
         engine.placeBet(formatbet(currentbet), themultiplier, false); 
+        mimic = false; 
     } else if (chatbet == true) { 
         var thebet = (engine.getBalance() / 100) * 0.05; 
         var themultiplier = 200; 
         currentbet = thebet; 
+
         engine.placeBet(formatbet(currentbet), themultiplier, false); 
         chatbet = false; 
     } 
@@ -146,8 +152,7 @@ function cashout(gamedata) {
     log_cashout_data(gamedata); 
     if (mimic == true && gamedata.username == targetmimic) { 
         engine.cashOut(true); 
-        console.log('cashed out when MountainDew did'); 
-        // engine.chat('[FALCONBOT] cashout mimick of MountainDew executed successfully :)'); 
+        console.log('cashed out when ' + targetmimic + ' did'); 
     } 
     // gamerecords[gameselapsed]['cashouts'].push(gamedata); 
 } 
@@ -212,45 +217,59 @@ function process_chat_message(gamedata) {
     console.log('--------- CHAT MESSAGE BELOW -----------'); 
     console.log(JSON.stringify(gamedata)); 
     if (gamedata.username == 'beebo') { 
+        var match = falconregexp.exec(gamedata.message);
 
-        if (gamedata.message == 'FALCON stop') { 
-            console.log('FALCON is stopping'); 
-            engine.chat('[FALCONBOT]: FALCON BOT stopping'); 
-            engine.stop(); 
-        }
+        if (match != undefined) { 
+            var falconcommand = match[1]; 
+            if (falconcommand == 'mimic') { 
+                var mimicuser = match[2]; 
+                targetmimic = mimicuser; 
+                var amount = match[3]; 
+                mimic = true; 
+                mimicbet = parseInt(amount); 
+                engine.chat('[FALCONBOT]: we will bet ' + mimicbet + ' bits and cash out the same time ' + mimicuser +' does next round (or 10x, whatever comes first)... [if ' + mimicuser + ' is not playing in the next round we will pick a user to follow at random]'); 
+            } 
+        } else { 
+            if (gamedata.message == 'FALCON stop') { 
+                console.log('FALCON is stopping'); 
+                engine.chat('[FALCONBOT]: FALCON BOT stopping'); 
+                engine.stop(); 
+            }
 
-        if (gamedata.message == 'FALCON status') { 
-            console.log('FALCON is online'); 
-            engine.chat('[FALCONBOT]: FALCON BOT is online +'); 
-        }
+            if (gamedata.message == 'FALCON status') { 
+                console.log('FALCON is online'); 
+                engine.chat('[FALCONBOT]: FALCON BOT is online +'); 
+            }
 
-        if (gamedata.message == 'FALCON gamecount') { 
-            console.log('FALCON is online'); 
-            var gamesplayedcount = numwinners + numlosers; 
-            engine.chat('[FALCONBOT]: Games Played: ' + gamesplayedcount + ' | Games Elapsed: ' + gameselapsed + ' | Games Won: ' + numwinners + ' | Games Lost: ' + numlosers + " | Median: " + historicalmedian); 
-        }
+            if (gamedata.message == 'FALCON gamecount') { 
+                console.log('FALCON is online'); 
+                gamesplayedcount = numwinners + numlosers; 
+                engine.chat('[FALCONBOT]: Games Played: ' + gamesplayedcount + ' | Games Elapsed: ' + gameselapsed + ' | Games Won: ' + numwinners + ' | Games Lost: ' + numlosers + " | Median: " + historicalmedian); 
+            } 
 
-        if (gamedata.message == 'FALCON 5% doubler') { 
-            console.log('FALCON is online'); 
-            chatbet = true; 
-            var gamesplayedcount = numwinners + numlosers; 
-            engine.chat('[FALCONBOT]: betting 5% of account for 2x next game...'); 
-        }
 
-        if (gamedata.message == 'FALCON mimic $random_player 5%') { 
-            console.log('FALCON is online'); 
-            chatbet = true; 
-            var gamesplayedcount = numwinners + numlosers; 
-            var randomnum = Math.floor((Math.random() * usersplaying.length) + 1);
-            var mimicuser =usersplaying[randomnum];  
-            // for (var user in curgamerecord) { 
-            //     if (count == randomnum) { 
-            //         mimicuser = user.username; 
-            //     }
-            //     count = count + 1; 
-            // }
-            engine.chat('[FALCONBOT]: we will bet 5% of our balance and cash out the same time (or 10x, whatever comes first) ' + mimicuser +' does next round...'); 
-            mimic = true; 
+
+
+        // if (gamedata.message == 'FALCON 5% doubler') { 
+        //     console.log('FALCON is online'); 
+        //     chatbet = true; 
+        //     var gamesplayedcount = numwinners + numlosers; 
+        //     engine.chat('[FALCONBOT]: betting 5% of account for 2x next game...'); 
+        // }
+
+        // if (gamedata.message == 'FALCON mimic $random_player 5%') { 
+        //     console.log('FALCON is online'); 
+        //     chatbet = true; 
+        //     var gamesplayedcount = numwinners + numlosers; 
+        //     var randomnum = Math.floor((Math.random() * usersplaying.length) + 1);
+        //     var mimicuser =usersplaying[randomnum];  
+        //     // for (var user in curgamerecord) { 
+        //     //     if (count == randomnum) { 
+        //     //         mimicuser = user.username; 
+        //     //     }
+        //     //     count = count + 1; 
+        //     // }
+        //     mimic = true; 
         }
 
     }
@@ -294,7 +313,7 @@ function log_post_game_data(gamedata) {
     // console.log(JSON.stringify(gamedata)); 
     gamehistory.push(gamedata); 
     // console.log(JSON.stringify(gamehistory)); 
-    summarize_history(); 
+    summarize_history(gamedata); 
     console.log('MEDIAN: ' + historicalmedian); 
     var gameresultstatus = engine.lastGamePlay(); 
     laststatus = gameresultstatus; 
@@ -313,14 +332,15 @@ function log_post_game_data(gamedata) {
 
     if (mimic == true) { 
         if (laststatus == 'WON') { 
-            engine.chat('[FALCONBOT] We mimicked MountainDew successfully and won the game!'); 
+            engine.chat('[FALCONBOT] We mimicked ' + targetmimic + ' successfully and won the game!'); 
         } else if (laststatus == 'LOST') { 
-            engine.chat('[FALCONBOT] We mimicked MountainDew and failed miserably'); 
+            engine.chat('[FALCONBOT] We mimicked ' + targetmimic + ' and failed miserably'); 
         }
     } 
 
     gameselapsed++; 
     mimic = false; 
+    mimicbet = 0; 
     chatbet = false; 
     currentbalance = engine.getBalance(); 
     console.log("GAMES ELAPSED: " + gameselapsed); 
@@ -334,7 +354,7 @@ function log_cashout_data(gamedata) {
     }
 } 
 
-function summarize_history() { 
+function summarize_history(gamedata) { 
     medianvalues = []; 
 
     for (var gamehistoryitem in gamedata) {
